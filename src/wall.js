@@ -1,7 +1,7 @@
 /**
  * @param {BABYLON.Scene} scene
  */
-export const createWalls = (scene) => {
+export const createWalls = async (scene) => {
   const wall1 = BABYLON.MeshBuilder.CreateGround(
     "wall1",
     { width: 10, height: 20 },
