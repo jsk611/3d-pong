@@ -119,7 +119,6 @@ function mapState(scene) {
               scene
                 .getMeshByName("Ball")
                 .physicsBody.setLinearVelocity(gameState.ball.direction);
-              console.log(gameState);
             }
             break;
         }

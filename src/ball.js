@@ -1,3 +1,4 @@
+import { player1ScoreDisplay, player2ScoreDisplay } from "./dom.js";
 import { gameState } from "./store.js";
 import { isTriggerEntered } from "./utils.js";
 
@@ -82,6 +83,9 @@ export const registerBallTrigger = async (scene) => {
       updateBallVelocity();
       if (Math.abs(ball.position.z) >= 15) {
         gameState.state = "stop";
+
+        updateScore(ball);
+
         ball.position = new BABYLON.Vector3(0, 2, 0);
         ball.physicsBody.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
         ball.physicsBody.dispose();
@@ -146,3 +150,11 @@ export const registerBallTrigger = async (scene) => {
     }
   });
 };
+
+function updateScore(ball) {
+  if (ball.position.z > 0) {
+    player1ScoreDisplay.textContent = gameState.player1Score;
+  } else if (ball.position < 0) {
+    player2ScoreDisplay.textContent = gameState.player2Score;
+  }
+}
