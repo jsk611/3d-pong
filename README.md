@@ -1,3 +1,3 @@
-# Neon Pong
+# 3D Pong
 
-3D pong with neon effects.
+3D pong
