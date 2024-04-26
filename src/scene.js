@@ -36,7 +36,7 @@ async function attachHavokPlugin(scene) {
  * @param {BABYLON.Scene} scene
  */
 async function createLight(scene) {
-  const light = new BABYLON.PointLight(
+  const light = new BABYLON.HemisphericLight(
     "Light",
     new BABYLON.Vector3(0, 5, 0),
     scene

@@ -10,6 +10,46 @@ export const createBall = async (scene) => {
     scene
   );
   ball.position.y = 2;
+  const ballMaterial = new BABYLON.PBRMaterial("neon-ball", scene);
+  ballMaterial.emissiveColor = new BABYLON.Color3(
+    80 / 255,
+    254 / 255,
+    252 / 255
+  );
+  ballMaterial.metallic = 0;
+  ball.material = ballMaterial;
+
+  const ballLight = new BABYLON.PointLight(
+    "neon-ball-point",
+    BABYLON.Vector3.Zero(),
+    scene
+  );
+  ballLight.diffuse = new BABYLON.Color3(80 / 255, 254 / 255, 252 / 255);
+  ballLight.parent = ball;
+  ballLight.intensity = 1;
+
+  const ballIndicator = new BABYLON.MeshBuilder.CreateCylinder(
+    "ball-cylinder",
+    { diameter: 0.1 },
+    scene
+  );
+  ballIndicator.position.y = -1;
+  ballIndicator.scaling.y = 1;
+  ballIndicator.parent = ball;
+  ballIndicator.material = new BABYLON.PBRMaterial(
+    "neon-ball-indicator",
+    scene
+  );
+  ballIndicator.material.emissiveColor = new BABYLON.Color3(
+    80 / 255,
+    254 / 255,
+    252 / 255
+  );
+  ballIndicator.material.metallic = 0;
+  scene.registerBeforeRender(() => {
+    ballIndicator.position.y = -ball.position.y / 2;
+    ballIndicator.scaling.y = ball.position.y / 2;
+  });
 
   const ballAggregate = new BABYLON.PhysicsAggregate(
     ball,

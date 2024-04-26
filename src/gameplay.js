@@ -2,6 +2,11 @@
  * @param {BABYLON.Scene} scene
  */
 export const createRackets = async (scene) => {
+  const unlitMaterial = new BABYLON.PBRMaterial("unlit", scene);
+  unlitMaterial.emissiveColor = BABYLON.Color3.White();
+  unlitMaterial.metallic = 0;
+  unlitMaterial.roughness = 0;
+
   const racket1 = new BABYLON.MeshBuilder.CreateBox(
     "Racket1",
     {
@@ -12,6 +17,7 @@ export const createRackets = async (scene) => {
     scene
   );
   racket1.position = new BABYLON.Vector3(0, 5, -10);
+  racket1.material = unlitMaterial;
   const racket1Aggregate = new BABYLON.PhysicsAggregate(
     racket1,
     BABYLON.PhysicsShapeType.BOX,
@@ -21,6 +27,15 @@ export const createRackets = async (scene) => {
     },
     scene
   );
+
+  const racketLight1 = new BABYLON.PointLight(
+    "racket-light-1",
+    BABYLON.Vector3.Zero(),
+    scene
+  );
+  racketLight1.intensity = 0.1;
+  racketLight1.parent = racket1;
+
   const racket2 = new BABYLON.MeshBuilder.CreateBox(
     "Racket2",
     {
@@ -31,6 +46,7 @@ export const createRackets = async (scene) => {
     scene
   );
   racket2.position = new BABYLON.Vector3(0, 5, 10);
+  racket2.material = unlitMaterial;
   const racket2Aggregate = new BABYLON.PhysicsAggregate(
     racket2,
     BABYLON.PhysicsShapeType.BOX,
@@ -50,7 +66,6 @@ export const createRackets = async (scene) => {
 export const gameplay = async (scene) => {
   const racket1 = scene.getMeshByName("Racket1");
   const racket2 = scene.getMeshByName("Racket2");
-  console.log(racket1);
   scene.onKeyboardObservable.add(mapState);
   scene.registerBeforeRender(
     updateRacketPositionBeforeRender(scene, racket1, racket2)
