@@ -59,7 +59,9 @@ export const createBall = async (scene) => {
     },
     scene
   );
-  ballAggregate.body.setLinearVelocity(new BABYLON.Vector3(1, 1, 1));
+  ballAggregate.body.setLinearVelocity(
+    BABYLON.Vector3.Random().normalize().scale(2)
+  );
 };
 
 /**
@@ -68,48 +70,60 @@ export const createBall = async (scene) => {
 export const registerBallTrigger = async (scene) => {
   const physicsEngine = scene.getPhysicsEngine();
   const havokPlugin = physicsEngine.getPhysicsPlugin();
+  const ball = scene.getMeshByName("Ball");
+  let speed = 2;
+  let direction = ball.physicsBody.getLinearVelocity().normalize();
+
+  function updateBallVelocity() {
+    ball.physicsBody.setLinearVelocity(
+      direction.clone().normalize().scale(speed)
+    );
+  }
+
+  scene.registerBeforeRender(() => {
+    speed += (scene.deltaTime ?? 0) * 0.0001;
+    updateBallVelocity();
+  });
 
   havokPlugin.onTriggerCollisionObservable.add((e) => {
     isTriggerEntered(e, "Ball", "wall1")
       .then(([ball, wall]) => {
-        const ballVelocity = ball.physicsBody.getLinearVelocity().clone();
-        ballVelocity.x = -1;
-        ball.physicsBody.setLinearVelocity(ballVelocity);
+        direction.x = -Math.abs(direction.x);
+        updateBallVelocity();
       })
       .catch(() => {});
     isTriggerEntered(e, "Ball", "wall2")
       .then(([ball, wall]) => {
-        const ballVelocity = ball.physicsBody.getLinearVelocity().clone();
-        ballVelocity.x = 1;
-        ball.physicsBody.setLinearVelocity(ballVelocity);
+        direction.x = Math.abs(direction.x);
+        updateBallVelocity();
       })
       .catch(() => {});
     isTriggerEntered(e, "Ball", "ground")
       .then(([ball, wall]) => {
-        const ballVelocity = ball.physicsBody.getLinearVelocity().clone();
-        ballVelocity.y = 1;
-        ball.physicsBody.setLinearVelocity(ballVelocity);
+        direction.y = Math.abs(direction.y);
+        updateBallVelocity();
       })
       .catch(() => {});
     isTriggerEntered(e, "Ball", "ceiling")
       .then(([ball, wall]) => {
-        const ballVelocity = ball.physicsBody.getLinearVelocity().clone();
-        ballVelocity.y = -1;
-        ball.physicsBody.setLinearVelocity(ballVelocity);
+        direction.y = -Math.abs(direction.y);
+        updateBallVelocity();
       })
       .catch(() => {});
     isTriggerEntered(e, "Ball", "Racket1")
       .then(([ball, racket]) => {
-        const ballVelocity = ball.physicsBody.getLinearVelocity().clone();
-        ballVelocity.z = 1;
-        ball.physicsBody.setLinearVelocity(ballVelocity);
+        direction = ball.position.subtract(
+          racket.position.clone().subtractFromFloats(0, 0, 1.5)
+        );
+        updateBallVelocity();
       })
       .catch(() => {});
     isTriggerEntered(e, "Ball", "Racket2")
       .then(([ball, racket]) => {
-        const ballVelocity = ball.physicsBody.getLinearVelocity().clone();
-        ballVelocity.z = -1;
-        ball.physicsBody.setLinearVelocity(ballVelocity);
+        direction = ball.position.subtract(
+          racket.position.clone().addInPlaceFromFloats(0, 0, 1.5)
+        );
+        updateBallVelocity();
       })
       .catch(() => {});
   });
