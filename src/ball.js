@@ -1,3 +1,4 @@
+import { gameState } from "./store.js";
 import { isTriggerEntered } from "./utils.js";
 
 /**
@@ -59,9 +60,6 @@ export const createBall = async (scene) => {
     },
     scene
   );
-  ballAggregate.body.setLinearVelocity(
-    BABYLON.Vector3.Random().normalize().scale(2)
-  );
 };
 
 /**
@@ -71,60 +69,80 @@ export const registerBallTrigger = async (scene) => {
   const physicsEngine = scene.getPhysicsEngine();
   const havokPlugin = physicsEngine.getPhysicsPlugin();
   const ball = scene.getMeshByName("Ball");
-  let speed = 2;
-  let direction = ball.physicsBody.getLinearVelocity().normalize();
 
   function updateBallVelocity() {
     ball.physicsBody.setLinearVelocity(
-      direction.clone().normalize().scale(speed)
+      gameState.ball.direction.clone().normalize().scale(gameState.ball.speed)
     );
   }
 
   scene.registerBeforeRender(() => {
-    speed += (scene.deltaTime ?? 0) * 0.0001;
-    updateBallVelocity();
+    if (gameState.state == "start") {
+      gameState.ball.speed += (scene.deltaTime ?? 0) * 0.0001;
+      updateBallVelocity();
+      if (Math.abs(ball.position.z) >= 15) {
+        gameState.state = "stop";
+        ball.position = new BABYLON.Vector3(0, 2, 0);
+        ball.physicsBody.setLinearVelocity(new BABYLON.Vector3(0, 0, 0));
+        ball.physicsBody.dispose();
+        const ballAggregate = new BABYLON.PhysicsAggregate(
+          ball,
+          BABYLON.PhysicsShapeType.SPHERE,
+          {
+            mass: 1,
+          },
+          scene
+        );
+      }
+    }
   });
 
   havokPlugin.onTriggerCollisionObservable.add((e) => {
-    isTriggerEntered(e, "Ball", "wall1")
-      .then(([ball, wall]) => {
-        direction.x = -Math.abs(direction.x);
-        updateBallVelocity();
-      })
-      .catch(() => {});
-    isTriggerEntered(e, "Ball", "wall2")
-      .then(([ball, wall]) => {
-        direction.x = Math.abs(direction.x);
-        updateBallVelocity();
-      })
-      .catch(() => {});
-    isTriggerEntered(e, "Ball", "ground")
-      .then(([ball, wall]) => {
-        direction.y = Math.abs(direction.y);
-        updateBallVelocity();
-      })
-      .catch(() => {});
-    isTriggerEntered(e, "Ball", "ceiling")
-      .then(([ball, wall]) => {
-        direction.y = -Math.abs(direction.y);
-        updateBallVelocity();
-      })
-      .catch(() => {});
-    isTriggerEntered(e, "Ball", "Racket1")
-      .then(([ball, racket]) => {
-        direction = ball.position.subtract(
-          racket.position.clone().subtractFromFloats(0, 0, 1.5)
-        );
-        updateBallVelocity();
-      })
-      .catch(() => {});
-    isTriggerEntered(e, "Ball", "Racket2")
-      .then(([ball, racket]) => {
-        direction = ball.position.subtract(
-          racket.position.clone().addInPlaceFromFloats(0, 0, 1.5)
-        );
-        updateBallVelocity();
-      })
-      .catch(() => {});
+    if (gameState.state == "start") {
+      isTriggerEntered(e, "Ball", "wall1")
+        .then(([ball, wall]) => {
+          const direction = gameState.ball.direction;
+          direction.x = -Math.abs(direction.x);
+          updateBallVelocity();
+        })
+        .catch(() => {});
+      isTriggerEntered(e, "Ball", "wall2")
+        .then(([ball, wall]) => {
+          const direction = gameState.ball.direction;
+          direction.x = Math.abs(direction.x);
+          updateBallVelocity();
+        })
+        .catch(() => {});
+      isTriggerEntered(e, "Ball", "ground")
+        .then(([ball, wall]) => {
+          const direction = gameState.ball.direction;
+          direction.y = Math.abs(direction.y);
+          updateBallVelocity();
+        })
+        .catch(() => {});
+      isTriggerEntered(e, "Ball", "ceiling")
+        .then(([ball, wall]) => {
+          const direction = gameState.ball.direction;
+          direction.y = -Math.abs(direction.y);
+          updateBallVelocity();
+        })
+        .catch(() => {});
+      isTriggerEntered(e, "Ball", "Racket1")
+        .then(([ball, racket]) => {
+          gameState.ball.direction = ball.position.subtract(
+            racket.position.clone().subtractFromFloats(0, 0, 1.5)
+          );
+          updateBallVelocity();
+        })
+        .catch(() => {});
+      isTriggerEntered(e, "Ball", "Racket2")
+        .then(([ball, racket]) => {
+          gameState.ball.direction = ball.position.subtract(
+            racket.position.clone().addInPlaceFromFloats(0, 0, 1.5)
+          );
+          updateBallVelocity();
+        })
+        .catch(() => {});
+    }
   });
 };

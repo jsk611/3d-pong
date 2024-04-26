@@ -1,3 +1,10 @@
+import {
+  gameState,
+  racket1State,
+  racket2State,
+  initializeBallState,
+} from "./store.js";
+
 /**
  * @param {BABYLON.Scene} scene
  */
@@ -66,84 +73,88 @@ export const createRackets = async (scene) => {
 export const gameplay = async (scene) => {
   const racket1 = scene.getMeshByName("Racket1");
   const racket2 = scene.getMeshByName("Racket2");
-  scene.onKeyboardObservable.add(mapState);
+  scene.onKeyboardObservable.add(mapState(scene));
   scene.registerBeforeRender(
     updateRacketPositionBeforeRender(scene, racket1, racket2)
   );
 };
 
-const racket1State = {
-  left: false,
-  right: false,
-  up: false,
-  down: false,
-};
-const racket2State = {
-  left: false,
-  right: false,
-  up: false,
-  down: false,
-};
-function mapState(keyboardInfo) {
-  switch (keyboardInfo.type) {
-    case BABYLON.KeyboardEventTypes.KEYDOWN:
-      switch (keyboardInfo.event.key) {
-        case "w":
-          racket1State.up = true;
-          break;
-        case "a":
-          racket1State.left = true;
-          break;
-        case "s":
-          racket1State.down = true;
-          break;
-        case "d":
-          racket1State.right = true;
-          break;
-        case "ArrowLeft":
-          racket2State.left = true;
-          break;
-        case "ArrowRight":
-          racket2State.right = true;
-          break;
-        case "ArrowUp":
-          racket2State.up = true;
-          break;
-        case "ArrowDown":
-          racket2State.down = true;
-          break;
-      }
-      break;
+/**
+ * @param {BABYLON.Scene} scene
+ */
+function mapState(scene) {
+  return (keyboardInfo) => {
+    console.log(keyboardInfo);
+    switch (keyboardInfo.type) {
+      case BABYLON.KeyboardEventTypes.KEYDOWN:
+        switch (keyboardInfo.event.key) {
+          case "w":
+            racket1State.up = true;
+            break;
+          case "a":
+            racket1State.left = true;
+            break;
+          case "s":
+            racket1State.down = true;
+            break;
+          case "d":
+            racket1State.right = true;
+            break;
+          case "ArrowLeft":
+            racket2State.left = true;
+            break;
+          case "ArrowRight":
+            racket2State.right = true;
+            break;
+          case "ArrowUp":
+            racket2State.up = true;
+            break;
+          case "ArrowDown":
+            racket2State.down = true;
+            break;
+          case " ":
+            if (gameState.state === "stop") {
+              gameState.state = "start";
+              initializeBallState();
+              scene
+                .getMeshByName("Ball")
+                .physicsBody.setLinearVelocity(gameState.ball.direction);
+              console.log(gameState);
+            }
+            break;
+        }
+        break;
 
-    case BABYLON.KeyboardEventTypes.KEYUP:
-      switch (keyboardInfo.event.key) {
-        case "w":
-          racket1State.up = false;
-          break;
-        case "a":
-          racket1State.left = false;
-          break;
-        case "s":
-          racket1State.down = false;
-          break;
-        case "d":
-          racket1State.right = false;
-          break;
-        case "ArrowLeft":
-          racket2State.left = false;
-          break;
-        case "ArrowRight":
-          racket2State.right = false;
-          break;
-        case "ArrowUp":
-          racket2State.up = false;
-          break;
-        case "ArrowDown":
-          racket2State.down = false;
-          break;
-      }
-      break;
-  }
+      case BABYLON.KeyboardEventTypes.KEYUP:
+        switch (keyboardInfo.event.key) {
+          case "w":
+            racket1State.up = false;
+            break;
+          case "a":
+            racket1State.left = false;
+            break;
+          case "s":
+            racket1State.down = false;
+            break;
+          case "d":
+            racket1State.right = false;
+            break;
+          case "ArrowLeft":
+            racket2State.left = false;
+            break;
+          case "ArrowRight":
+            racket2State.right = false;
+            break;
+          case "ArrowUp":
+            racket2State.up = false;
+            break;
+          case "ArrowDown":
+            racket2State.down = false;
+            break;
+        }
+        break;
+    }
+  };
 }
 
 function updateRacketPositionBeforeRender(scene, racket1, racket2) {
