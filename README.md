@@ -1,11 +1,11 @@
 <!-- markdownlint-disable MD033 MD041 -->
-<div style="text-align: center">
+<div align="center">
   <a href="https://github.com/SKKU-MAV/3d-pong">
-    <img src="./static/logo.jpg" style="border-radius: 9999px" alt="Logo" width="80" height="80">
+    <img src="./static/logo.jpg" style="border-radius: 9999px" alt="Logo" width="100" height="100">
   </a>
-
-  <h2 style="text-align: center">3D Pong</h2>
 </div>
+
+# 3D Pong
 
 ## About 3D Pong
 
