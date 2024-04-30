@@ -22,7 +22,7 @@ Babylon.js로 작성한 2인용 3D Pong 게임입니다. Git 및 팀 협업 교�
 1. 레포지토리를 클론하세요.
 
    ```sh
-   git clone https://github.com/threedalpeng/jazzy-dalpeng
+   git clone https://github.com/SKKU-MAV/3d-pong
    ```
 
 2. Live Server와 같은 웹 서버를 실행한 후, 브라우저를 통해 설정된 주소/포트에 접근합니다.
