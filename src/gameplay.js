@@ -53,7 +53,8 @@ export const createRackets = async (scene) => {
     scene
   );
   racket2.position = new BABYLON.Vector3(0, 5, 10);
-  racket2.material = unlitMaterial;
+  racket2.material = unlitMaterial.clone("racket2-unlit");
+
   const racket2Aggregate = new BABYLON.PhysicsAggregate(
     racket2,
     BABYLON.PhysicsShapeType.BOX,
@@ -207,4 +208,8 @@ function updateRacketPositionBeforeRender(scene, racket1, racket2) {
       );
     }
   };
+}
+
+function setRacketColor(racket, color) {
+  racket.material.emissiveColor = color;
 }
