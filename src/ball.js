@@ -153,8 +153,10 @@ export const registerBallTrigger = async (scene) => {
 
 function updateScore(ball) {
   if (ball.position.z > 0) {
+    gameState.player1Score += 1;
     player1ScoreDisplay.textContent = gameState.player1Score;
-  } else if (ball.position < 0) {
+  } else if (ball.position.z < 0) {
+    gameState.player2Score += 1;
     player2ScoreDisplay.textContent = gameState.player2Score;
   }
 }
