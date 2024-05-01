@@ -29,6 +29,7 @@ export const createBall = async (scene) => {
   ballLight.diffuse = new BABYLON.Color3(80 / 255, 254 / 255, 252 / 255);
   ballLight.parent = ball;
   ballLight.intensity = 1;
+  //test
 
   const ballIndicator = new BABYLON.MeshBuilder.CreateCylinder(
     "ball-cylinder",
